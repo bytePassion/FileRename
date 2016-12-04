@@ -1,0 +1,213 @@
+﻿<Window x:Class="bytePassion.FileRename.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+		xmlns:sampleData="clr-namespace:bytePassion.FileRename.ViewModel.SampleData"
+		xmlns:converter="clr-namespace:bytePassion.FileRename.Converter"
+        xmlns:enum="clr-namespace:bytePassion.FileRename.RenameLogic.Enums"        
+        xmlns:computations="clr-namespace:bytePassion.Lib.WpfLib.Computations;assembly=bytePassion.Lib"
+        xmlns:converterLib="clr-namespace:bytePassion.Lib.WpfLib.Converter;assembly=bytePassion.Lib"
+        xmlns:behaviors="clr-namespace:bytePassion.Lib.WpfLib.Behaviors;assembly=bytePassion.Lib"
+        xmlns:wpfUtils="clr-namespace:bytePassion.Lib.WpfLib;assembly=bytePassion.Lib"
+
+        mc:Ignorable="d"
+        Title="bytePassion - FileRenameTool" Height="699.8" Width="885" MinHeight="440" MinWidth="820">
+
+	<d:Window.DataContext>
+		<sampleData:RenamerViewModelSampleData/>		
+	</d:Window.DataContext>
+
+	<Window.Resources>
+		<converterLib:BoolToCollapsedVisibilityConverter x:Key="BoolToVisibilityConverter"/>		
+		<converter:SearchTypeToBoolConverter x:Key="SearchTypeToBoolConverter"/>
+		<converter:ReplaceTypeToBoolConverter x:Key="ReplaceTypeToBoolConverter"/>	
+		<computations:BoolInverter x:Key="BoolInverter"/>
+	</Window.Resources>
+	
+	<Grid>
+
+		<Grid.RowDefinitions>
+			<RowDefinition Height="40"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+
+		<Grid Grid.Row="0">
+			
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="150"/>
+			</Grid.ColumnDefinitions>
+			
+			<Button Grid.Column="0" 
+					Width="100"
+					Content="Start" 
+					Margin="5" 					
+					Command="{Binding Start}"/>
+			
+			<Button Grid.Column="0" 
+					Width="100"
+					Content="Abrrechen" 
+					Margin="5" 
+					Visibility="{Binding IsProcessAbortable, Converter={StaticResource BoolToVisibilityConverter}}"
+					Command="{Binding Abort}"/>
+			
+			<ComboBox Grid.Column="1" 
+					 Margin="5"
+					 IsEditable="True"
+					 ItemsSource="{Binding LastExecutedStartFolders}"
+					 Text="{Binding StartDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+					 IsEnabled="{Binding IsProcessRunning, Converter={StaticResource BoolInverter}}"
+					 VerticalContentAlignment="Center"
+					 Padding="5,0,0,0"/>
+			
+			<Button Grid.Column="2" 
+					Content="Ordner Wählen" 
+					Margin="5"
+					Command="{Binding SelectFolder}"/>
+		</Grid>
+
+		<Expander Grid.Row="1"
+				  Margin="5"
+				  Header="Optionen"
+				  IsExpanded="{Binding IsProcessRunning, Converter={StaticResource BoolInverter}, Mode=OneWay}">			
+			<Grid>
+				
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="400"/>
+					<ColumnDefinition/>
+				</Grid.ColumnDefinitions>
+				
+				<StackPanel Grid.Column="0" 
+							Orientation="Vertical">
+					
+					<GroupBox Header="Suchen nach">
+						<StackPanel Orientation="Vertical"
+									Margin="5">
+							
+							<Grid>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="100"/>
+									<ColumnDefinition/>
+								</Grid.ColumnDefinitions>
+								
+								<RadioButton Grid.Column="0" 
+											 Margin="5,2" 
+											 GroupName="1" 
+											 Content="Zeichenkette"
+											 IsChecked="{Binding SearchType, 
+																 Mode=TwoWay, 
+																 Converter={StaticResource SearchTypeToBoolConverter}, 
+																 ConverterParameter={x:Static enum:SearchType.Characters}}"/>
+								
+								<TextBox Grid.Column="1"
+										 Text="{Binding SearchString, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"/>
+							</Grid>
+
+							<RadioButton Margin="5,2" 										 
+										 GroupName="2"										 
+										 Content="Leerzeichen"
+										 IsChecked="{Binding SearchType, 
+															 Mode=TwoWay, 
+															 Converter={StaticResource SearchTypeToBoolConverter}, 
+															 ConverterParameter={x:Static enum:SearchType.WhiteSpace}}"/>
+							
+							<RadioButton Margin="5,2" 
+										 GroupName="3" 
+										 Content="Spezialendung [hexadezimalzahl] (z.B. -34a56c8933 oder __34f56c)"
+										 IsChecked="{Binding SearchType, 
+															 Mode=TwoWay, 
+															 Converter={StaticResource SearchTypeToBoolConverter}, 
+															 ConverterParameter={x:Static enum:SearchType.Special}}"/>
+							
+						</StackPanel>
+					</GroupBox>
+					
+					<GroupBox Header="Ersetzen durch">
+						<StackPanel Orientation="Vertical"
+									Margin="5">
+
+							<Grid>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="100"/>
+									<ColumnDefinition/>
+								</Grid.ColumnDefinitions>
+
+								<RadioButton Grid.Column="0" 
+											 Margin="5,2" 
+											 GroupName="4" 
+											 Content="Zeichenkette"
+											 IsChecked="{Binding ReplaceType, 
+																 Mode=TwoWay, 
+																 Converter={StaticResource ReplaceTypeToBoolConverter}, 
+																 ConverterParameter={x:Static enum:ReplaceType.Characters}}"/>
+								
+								<TextBox Grid.Column="1"
+										 Text="{Binding ReplaceString, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"/>
+							</Grid>
+
+							<RadioButton Margin="5,2"										
+										 GroupName="5" 
+										 Content="Leerzeichen"
+										 IsChecked="{Binding ReplaceType, 
+															 Mode=TwoWay, 
+															 Converter={StaticResource ReplaceTypeToBoolConverter}, 
+															 ConverterParameter={x:Static enum:ReplaceType.WhiteSpace}}"/>
+							
+							<RadioButton Margin="5,2" 
+										 GroupName="6" 
+										 Content="Löschen"
+										 IsChecked="{Binding ReplaceType, 
+															 Mode=TwoWay, 
+															 Converter={StaticResource ReplaceTypeToBoolConverter}, 
+															 ConverterParameter={x:Static enum:ReplaceType.Delete}}"/>
+
+						</StackPanel>
+					</GroupBox>
+				</StackPanel>
+				
+				<Border Grid.Column="1" 
+						BorderThickness="1"
+						BorderBrush="Black"
+						Width="250"
+						Height="70"
+						HorizontalAlignment="Left"
+						VerticalAlignment="Top"
+						Margin="10">
+				<StackPanel  Orientation="Vertical" Margin="10">
+					<CheckBox Content="Groß- und Kleinschreibung beachten"
+							  IsChecked="{Binding SearchParameterCaseSensitivity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+					<CheckBox Content="Unterordner mit einbeziehen"
+							  IsChecked="{Binding SearchParameterIncludeSubfolders, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+					<CheckBox Content="Ordnernamen auch verändern" 
+							  IsChecked="{Binding SearchParameterChangeFolderNames, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+				</StackPanel>
+				</Border>
+			</Grid>			
+		</Expander>				
+
+		<ListView Grid.Row="2" x:Name="ListViewProgress" Margin="5" ItemsSource="{Binding ListItems}">
+			<ListView.View>
+				<GridView wpfUtils:GridViewColumns.HeaderTextMember="Header"
+                          wpfUtils:GridViewColumns.DisplayMemberMember="DisplayMember"
+                          wpfUtils:GridViewColumns.ColumnsSource="{Binding Columns}"/>
+			</ListView.View>
+
+			<i:Interaction.Behaviors>
+				<behaviors:GridViewSplitColumnsEqualyBehavior/>
+				<behaviors:AutoScollDownBehavior/>
+			</i:Interaction.Behaviors>
+		</ListView>
+
+		<Button Grid.Row="3" 
+				Height="40" 
+				Margin="5" 
+				Content="Letzten angestoßenen Prozess rückgängig machen"
+				Visibility="{Binding IsProcessUndoable, Converter={StaticResource BoolToVisibilityConverter}}"
+				Command="{Binding UndoLastRenaming}"/>
+	</Grid>
+</Window>

@@ -1,0 +1,97 @@
+﻿<Window x:Class="bytePassion.FileRename2.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"		
+        xmlns:computations="clr-namespace:bytePassion.Lib.WpfLib.Computations;assembly=bytePassion.Lib"
+        xmlns:converterLib="clr-namespace:bytePassion.Lib.WpfLib.Converter;assembly=bytePassion.Lib"        
+        xmlns:sampleData="clr-namespace:bytePassion.FileRename2.ViewModel.SampleData"
+        mc:Ignorable="d"
+        Title="bytePassion - FileRenameTool" 
+		Height="699.8" 
+		Width="885" 
+		MinHeight="440" 
+		MinWidth="820">
+
+	<d:Window.DataContext>
+		<sampleData:RenamerViewModelSampleData/>		
+	</d:Window.DataContext>
+
+	<Window.Resources>
+		<converterLib:BoolToCollapsedVisibilityConverter x:Key="BoolToVisibilityConverter"/>				
+		<computations:BoolInverter x:Key="BoolInverter"/>
+	</Window.Resources>
+	
+	<Grid>
+
+		<Grid.RowDefinitions>
+			<RowDefinition Height="40"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+
+		<Grid Grid.Row="0">
+			
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="150"/>
+			</Grid.ColumnDefinitions>
+			
+			<Button Grid.Column="0" 
+					Width="100"
+					Content="Start" 
+					Margin="5" 					
+					Command="{Binding Start}"/>
+			
+			<Button Grid.Column="0" 
+					Width="100"
+					Content="Abrrechen" 
+					Margin="5" 
+					Visibility="{Binding IsProcessAbortable, Converter={StaticResource BoolToVisibilityConverter}}"
+					Command="{Binding Abort}"/>
+			
+			<ComboBox Grid.Column="1" 
+					 Margin="5"
+					 IsEditable="True"
+					 ItemsSource="{Binding LastExecutedStartFolders}"
+					 Text="{Binding StartDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+					 IsEnabled="{Binding IsProcessRunning, Converter={StaticResource BoolInverter}}"
+					 VerticalContentAlignment="Center"
+					 Padding="5,0,0,0"/>
+			
+			<Button Grid.Column="2" 
+					Content="Ordner Wählen" 
+					Margin="5"
+					Command="{Binding SelectFolder}"/>
+		</Grid>
+
+		<Grid Grid.Row="1">
+			
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition/>
+				<ColumnDefinition/>
+			</Grid.ColumnDefinitions>
+			
+			<TextBox Grid.Column="0"
+					 Margin="5,5,0,5"
+					 Text="{Binding OriginalNames, Mode=OneWay}"
+					 IsReadOnly="True"/>
+			
+			<TextBox Grid.Column="1"
+					 Margin="0,5,5,5"
+					 Text="{Binding NewNames, 
+									Mode=TwoWay, 
+									UpdateSourceTrigger=PropertyChanged}"
+					 AcceptsReturn="True"/>
+			
+		</Grid>
+							
+		<Button Grid.Row="2" 
+				Height="40" 
+				Margin="5" 
+				Content="Letzten angestoßenen Prozess rückgängig machen"
+				Visibility="{Binding IsProcessUndoable, Converter={StaticResource BoolToVisibilityConverter}}"
+				Command="{Binding UndoLastRenaming}"/>
+	</Grid>
+</Window>
