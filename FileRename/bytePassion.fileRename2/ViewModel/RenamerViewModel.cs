@@ -59,7 +59,7 @@ namespace bytePassion.FileRename2.ViewModel
 					return true;
 				},
 				new PropertyChangedCommandUpdater(this, nameof(IsProcessStartable), 
-												  nameof(IsProcessStartable))
+												        nameof(StartDirectory))
 												 
 			);
 
