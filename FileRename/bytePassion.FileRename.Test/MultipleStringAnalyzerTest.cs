@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using bytePassion.FileRename.RenameLogic.Helper;
 using bytePassion.FileRename.RenameLogic.NameAnalyzer;
 using Xunit;
 
@@ -51,7 +52,7 @@ namespace bytePassion.FileRename.Test
 
 		[Theory]
 		[MemberData("TestDataForMultipleStringReplacementIndeciesTest")]
-		public void MultipleStringReplacementIndeciesTest (string name, string search, IReadOnlyList<Tuple<int, int>> expectedIndecies)
+		public void MultipleStringReplacementIndeciesTest (string name, string search, IReadOnlyList<StringIntervalIndecies> expectedIndecies)
 		{
 			var sut = new MultiStringAnalyzer(search, false);
 
@@ -68,10 +69,10 @@ namespace bytePassion.FileRename.Test
 		public static readonly IEnumerable<object[]> TestDataForMultipleStringReplacementIndeciesTest = 
 			new[]
 			{				
-				new object[]{ "myfile", "\"file\", \"foo\"" , new List<Tuple<int, int>> { new Tuple<int, int>(2, 6) }},				
-				new object[]{ "myfile", "\"f\", \"e\""      , new List<Tuple<int, int>> { new Tuple<int, int>(2, 3), new Tuple<int, int>(5, 6) }},
-				new object[]{ "myfile", "\"my\", \"yfi\"" , new List<Tuple<int, int>> { new Tuple<int, int>(0, 2) }},	
-				new object[]{ "foooobar", "\"oo\", \"foo\"" , new List<Tuple<int, int>> { new Tuple<int, int>(0, 3), new Tuple<int, int>(3,5) }}		
+				new object[]{ "myfile", "\"file\", \"foo\"" , new List<StringIntervalIndecies> { new StringIntervalIndecies(2, 6) }},				
+				new object[]{ "myfile", "\"f\", \"e\""      , new List<StringIntervalIndecies> { new StringIntervalIndecies(2, 3), new StringIntervalIndecies(5, 6) }},
+				new object[]{ "myfile", "\"my\", \"yfi\"" , new List<StringIntervalIndecies> { new StringIntervalIndecies(0, 2) }},	
+				new object[]{ "foooobar", "\"oo\", \"foo\"" , new List<StringIntervalIndecies> { new StringIntervalIndecies(0, 3), new StringIntervalIndecies(3,5) }}		
 			};
 
 	}

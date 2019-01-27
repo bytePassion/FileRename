@@ -24,25 +24,18 @@ namespace bytePassion.FileRename {
 			ILastUsedStartFoldersRepository repo = new LastUsedStartFoldersRepository(xmlStringDataStore);
 			repo.LoadFromXml();
 
-
-
 			// create permanent ViewModels
 
-			var readModel = new RenamerViewModel(repo.GetAll());
-
-
+			var renamerViewModel = new RenamerViewModel(repo.GetAll());
 
 			// create and show main Window
 
 			var mainWindow = new MainWindow()
 			{
-				DataContext = readModel
+				DataContext = renamerViewModel
 			};
 
 			mainWindow.ShowDialog();
-
-
-
 
 
 			///////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,7 +44,7 @@ namespace bytePassion.FileRename {
 			////////                                                                             //////////
 			///////////////////////////////////////////////////////////////////////////////////////////////
 
-			repo.Add(readModel.LastExecutedStartFolders);
+			repo.Add(renamerViewModel.LastExecutedStartFolders);
 			repo.SaveToXml();
 		}		
 	}

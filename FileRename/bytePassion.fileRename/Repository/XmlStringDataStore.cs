@@ -16,21 +16,16 @@ namespace bytePassion.FileRename.Repository
 			this.filename = filename;
 		}
 
-		private static XmlWriterSettings WriterSettings
-		{
-			get
-			{
-				return new XmlWriterSettings
-				{
-					Indent = true,
-					IndentChars = "  ",
-					NewLineChars = "\r\n",
-					NewLineHandling = NewLineHandling.Replace
-				};
-			}
-		}
+		private static XmlWriterSettings WriterSettings =>
+            new XmlWriterSettings
+            {
+                Indent          = true,
+                IndentChars     = "  ",
+                NewLineChars    = "\r\n",
+                NewLineHandling = NewLineHandling.Replace
+            };
 
-		private const string XmlRoot = "strings";
+        private const string XmlRoot = "strings";
 
 		private const string String         = "string";
 		private const string ValueAttribute = "value";		
@@ -75,7 +70,7 @@ namespace bytePassion.FileRename.Repository
 					if (reader.NodeType != XmlNodeType.Element || reader.Name != String) continue;
 					if (!reader.HasAttributes) continue;
 
-					var value = String.Empty;					
+					var value = string.Empty;					
 
 					while (reader.MoveToNextAttribute())
 					{

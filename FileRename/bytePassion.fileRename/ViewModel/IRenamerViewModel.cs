@@ -2,13 +2,13 @@
 using bytePassion.FileRename.ViewModel.Helper;
 using bytePassion.Lib.WpfLib;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Windows.Input;
+using bytePassion.Lib.WpfLib.ViewModelBase;
 
 
 namespace bytePassion.FileRename.ViewModel
 {
-	public interface IRenamerViewModel : INotifyPropertyChanged
+	public interface IRenamerViewModel : IViewModel
 	{
 		ICommand Start            { get; }
 		ICommand Abort            { get; }

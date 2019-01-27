@@ -14,7 +14,7 @@ namespace bytePassion.FileRename.RenameLogic.NameAnalyzer
 			return name.Contains(' ');
 		}
 
-		public IEnumerable<Tuple<int, int>> ReplacementIndecies(string name)
+		public IEnumerable<StringIntervalIndecies> ReplacementIndecies(string name)
 		{
 			return IndexSearcher.GetReplacementIndexTuples(name, " ");
 		}

@@ -28,25 +28,25 @@ namespace bytePassion.FileRename.RenameLogic.NameAnalyzer
 			return searchStrings.Any(nameToAnalyze.Contains);			
 		}
 
-		public IEnumerable<Tuple<int, int>> ReplacementIndecies(string name)
+		public IEnumerable<StringIntervalIndecies> ReplacementIndecies(string name)
 		{
 			var nameToAnalyze = searchCaseSensitive ? name : name.ToLower();
 
 			var allIndecies = searchStrings.Select(search => IndexSearcher.GetReplacementIndexTuples(nameToAnalyze, search))
 			                               .SelectMany(indexList => indexList)
-			                               .OrderBy(tuple => tuple.Item1)
+			                               .OrderBy(tuple => tuple.StartIndex)
 			                               .ToList();
 
-			int currentEnd = allIndecies[0].Item2;
+			int currentEnd = allIndecies[0].EndIndex;
 
-			var resultList = new List<Tuple<int, int>> {allIndecies[0]};
+			var resultList = new List<StringIntervalIndecies> {allIndecies[0]};
 
 			for (int i = 1; i < allIndecies.Count; i++)
 			{
 				var item = allIndecies[i];
-				if (item.Item1 >= currentEnd)
+				if (item.StartIndex >= currentEnd)
 				{
-					currentEnd = item.Item2;
+					currentEnd = item.EndIndex;
 					resultList.Add(item);
 				}
 			}

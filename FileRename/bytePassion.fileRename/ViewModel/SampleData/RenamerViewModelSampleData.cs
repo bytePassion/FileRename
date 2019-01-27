@@ -63,6 +63,7 @@ namespace bytePassion.FileRename.ViewModel.SampleData
 
 		public ObservableCollection<string> LastExecutedStartFolders { get; }
 
-		public event PropertyChangedEventHandler PropertyChanged;		
-	}
+        public void Dispose() {}
+		public event PropertyChangedEventHandler PropertyChanged;
+    }
 }

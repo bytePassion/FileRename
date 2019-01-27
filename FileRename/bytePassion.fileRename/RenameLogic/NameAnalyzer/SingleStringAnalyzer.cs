@@ -22,7 +22,7 @@ namespace bytePassion.FileRename.RenameLogic.NameAnalyzer
 			return nameToAnalyze.Contains(searchString);			
 		}
 
-		public IEnumerable<Tuple<int, int>> ReplacementIndecies(string name)
+		public IEnumerable<StringIntervalIndecies> ReplacementIndecies(string name)
 		{
 			var nameToAnalyze = searchCaseSensitive ? name : name.ToLower();
 			return IndexSearcher.GetReplacementIndexTuples(nameToAnalyze, searchString);

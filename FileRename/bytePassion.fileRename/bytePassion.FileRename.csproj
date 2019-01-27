@@ -76,6 +76,7 @@
     <Compile Include="RenameLogic\Enums\SearchType.cs" />
     <Compile Include="RenameLogic\ChangeAction.cs" />
     <Compile Include="RenameLogic\Enums\ItemType.cs" />
+    <Compile Include="RenameLogic\Helper\StringIntervalIndecies.cs" />
     <Compile Include="RenameLogic\NameAnalyzer\INameAnalyzer.cs" />
     <Compile Include="RenameLogic\NameRefactorer\INameRefactorer.cs" />
     <Compile Include="RenameLogic\Helper\IndexSearcher.cs" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using bytePassion.FileRename.RenameLogic.Helper;
 
 
 namespace bytePassion.FileRename.RenameLogic.NameAnalyzer
@@ -10,7 +11,7 @@ namespace bytePassion.FileRename.RenameLogic.NameAnalyzer
 		//  - complete name has more than 4 characters
 		//  - name without ending has more than 2 character
 		//	- the special ending beginns with '-' or '_'
-		//	- minimal length 4
+		//	- minimal length 5
 		//	- maximal length 10
 		//	- more hex-numbers than letters
 
@@ -34,7 +35,7 @@ namespace bytePassion.FileRename.RenameLogic.NameAnalyzer
 
 			var specialEnding = name.Substring(i);
 
-			if (specialEnding.Length > 4 && specialEnding.Length < 12)
+			if (specialEnding.Length > 5 && specialEnding.Length < 12)
 			{
 				var numberCount = 0;
 				var letterCount = 0;
@@ -53,7 +54,7 @@ namespace bytePassion.FileRename.RenameLogic.NameAnalyzer
 			return false;
 		}
 
-		public IEnumerable<Tuple<int, int>> ReplacementIndecies(string name)
+		public IEnumerable<StringIntervalIndecies> ReplacementIndecies(string name)
 		{
 			int i = name.Length - 1;
 			while (i > 2)
@@ -66,7 +67,7 @@ namespace bytePassion.FileRename.RenameLogic.NameAnalyzer
 				i--;
 			}
 
-			return new List<Tuple<int, int>> { new Tuple<int, int>(i, name.Length) };
+			return new List<StringIntervalIndecies> { new StringIntervalIndecies(i, name.Length) };
 		}
 	}
 }

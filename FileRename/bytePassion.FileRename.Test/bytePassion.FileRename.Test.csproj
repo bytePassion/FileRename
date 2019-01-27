@@ -59,7 +59,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MultipleStringAnalyzerTest.cs" />
     <Compile Include="SingleStringAnalyzerTest.cs" />
-    <Compile Include="SpezialEndingAnalyzerTest.cs" />
+    <Compile Include="SpecialEndingAnalyzerTest.cs" />
     <Compile Include="StringReplacerTest.cs" />
     <Compile Include="TestWhiteSpaceAnalyzer.cs" />
   </ItemGroup>

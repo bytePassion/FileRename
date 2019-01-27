@@ -14,7 +14,7 @@ namespace bytePassion.FileRename.RenameLogic.NameRefactorer
 			this.replaceString = replaceString;
 		}
 
-		public string GetRefactoredName(string name, IEnumerable<Tuple<int, int>> replacementIndecies)
+		public string GetRefactoredName(string name, IEnumerable<StringIntervalIndecies> replacementIndecies)
 		{
 			return StringReplacer.GetReplacedString(name, replaceString, replacementIndecies);
 		}

@@ -18,9 +18,8 @@ using static System.String;
 
 namespace bytePassion.FileRename.ViewModel
 {
-	public class RenamerViewModel : IRenamerViewModel
+	public class RenamerViewModel : Lib.WpfLib.ViewModelBase.ViewModel, IRenamerViewModel
 	{
-
 		private Renamer renamer;				
 
 		private SearchType  searchType;
@@ -45,43 +44,20 @@ namespace bytePassion.FileRename.ViewModel
 		private bool isProcessRunning;
 		
 
-
 		public RenamerViewModel(IEnumerable<string> lastExecutedStartFolders)
-		{			
-			startCommand = new Command(
-				() => { 
-
-					SetUpRenamingProcess(); 
-					ListItems.Clear();
-					renamer.StartRenaming();
-
-					LastExecutedStartFolders.Add(StartDirectory);
-
-					IsProcessStartable = false;
-					IsProcessAbortable = true;
-					IsProcessRunning = true;					
-				},
-
-				() => {
-
-					if (!IsProcessStartable) return false;
-					if (SearchType   == SearchType.Characters && IsNullOrEmpty(SearchString))  return false;
-					if (ReplaceType == ReplaceType.Characters && IsNullOrEmpty(ReplaceString)) return false;
-					if (IsNullOrEmpty(StartDirectory)) return false;
-
-					return true;
-				},
-				new PropertyChangedCommandUpdater(this, nameof(IsProcessStartable), 
-												  nameof(IsProcessStartable),
-												  nameof(ReplaceString),
-												  nameof(ReplaceType),
-												  nameof(SearchType),
-												  nameof(SearchString))
-			);
+        {
+            startCommand = new Command(DoStart,
+                                       CanStart,
+                                       new PropertyChangedCommandUpdater(this, 
+                                                                         nameof(IsProcessStartable),
+                                                                         nameof(ReplaceString), nameof(ReplaceType),
+                                                                         nameof(SearchType), nameof(StartDirectory),
+                                                                         nameof(SearchString))
+                                      );
 
 			abortCommand = new Command(
-				() =>  renamer.AbortRenaming(),						
-				() =>  IsProcessAbortable,
+				() => renamer.AbortRenaming(),						
+				() => IsProcessAbortable,
 				new PropertyChangedCommandUpdater(this, nameof(IsProcessAbortable))
 			);
 
@@ -92,13 +68,7 @@ namespace bytePassion.FileRename.ViewModel
 			);
 
 			undoLastRenamingCommand = new Command(
-				() => {
-
-					renamer.UndoRenaming();
-					IsProcessStartable = false;
-					IsProcessAbortable = false;
-					IsProcessRunning = true;
-				},
+				UndoLastCommand,
 				() => IsProcessUndoable,
 				new PropertyChangedCommandUpdater(this, nameof(IsProcessUndoable))
 			);
@@ -114,18 +84,53 @@ namespace bytePassion.FileRename.ViewModel
 			LastExecutedStartFolders = new ObservableCollection<string>(lastExecutedStartFolders);
 
 			IsProcessAbortable = false;
-			IsProcessStartable = true;
+			IsProcessStartable = false;
 			IsProcessRunning   = false;
 			IsProcessUndoable  = false;
 
-			SearchParameterCaseSensitivity  = false;
+			SearchParameterCaseSensitivity   = false;
 			SearchParameterIncludeSubfolders = true;
 			SearchParameterChangeFolderNames = true;
 
 			SearchType  = SearchType.WhiteSpace;
 			ReplaceType = ReplaceType.Delete;
 		}
-		
+
+        private void UndoLastCommand()
+        {
+            renamer.UndoRenaming();
+            IsProcessStartable = false;
+            IsProcessAbortable = false;
+            IsProcessRunning   = true;
+        }
+
+        private void DoStart()
+        {
+            SetUpRenamingProcess();
+            ListItems.Clear();
+            renamer.StartRenaming();
+
+            while (LastExecutedStartFolders.Contains(StartDirectory))
+            {
+                LastExecutedStartFolders.Remove(StartDirectory);
+            }
+
+            LastExecutedStartFolders.Add(StartDirectory);
+
+            IsProcessStartable = false;
+            IsProcessAbortable = true;
+            IsProcessRunning   = true;
+        }
+
+        private bool CanStart()
+        {
+            if (!IsProcessStartable) return false;
+            if (SearchType  == SearchType.Characters  && IsNullOrEmpty(SearchString)) return false;
+            if (ReplaceType == ReplaceType.Characters && IsNullOrEmpty(ReplaceString)) return false;            
+
+            return true;
+        }
+
 		private void SetUpRenamingProcess()
 		{
 			renamer = new Renamer(new DirectoryInfo(StartDirectory), 
@@ -170,33 +175,33 @@ namespace bytePassion.FileRename.ViewModel
 
 		public bool IsProcessRunning
 		{
-			get { return isProcessRunning;}
-			private set { PropertyChanged.ChangeAndNotify(this, ref isProcessRunning, value); }
-		}
+			get => isProcessRunning;
+            private set => PropertyChanged.ChangeAndNotify(this, ref isProcessRunning, value);
+        }
 
 		public bool IsProcessStartable
 		{
-			get { return isProcessStartable; }
-			private set { PropertyChanged.ChangeAndNotify(this, ref isProcessStartable, value);	}
-		}
+			get => isProcessStartable;
+            private set => PropertyChanged.ChangeAndNotify(this, ref isProcessStartable, value);
+        }
 
 		public bool IsProcessAbortable
 		{
-			get { return isProcessAbortable; }
-			private set { PropertyChanged.ChangeAndNotify(this, ref isProcessAbortable, value); }
-		}
+			get => isProcessAbortable;
+            private set => PropertyChanged.ChangeAndNotify(this, ref isProcessAbortable, value);
+        }
 
 		public bool IsProcessUndoable
 		{
-			get { return isProcessUndoable; }
-			private set { PropertyChanged.ChangeAndNotify(this, ref isProcessUndoable, value); }
-		}
+			get => isProcessUndoable;
+            private set => PropertyChanged.ChangeAndNotify(this, ref isProcessUndoable, value);
+        }
 
 		private void ShowDirectoryDialog()
 		{
 			var dialog = new VistaFolderBrowserDialog
 			{
-				Description = @"Bitte Ordner Auswählen",
+				Description = "Bitte Ordner Auswählen",
 				UseDescriptionForTitle = true
 			};
 			
@@ -207,61 +212,62 @@ namespace bytePassion.FileRename.ViewModel
 
 		public string StartDirectory
 		{
-			get {return startDirectory; }
-			set
+			get => startDirectory;
+            set
 			{
 				PropertyChanged.ChangeAndNotify(this, ref startDirectory, value);
-
-				IsProcessStartable = Directory.Exists(StartDirectory);
+                
+                IsProcessStartable = !IsNullOrWhiteSpace(StartDirectory) && Directory.Exists(StartDirectory);
 			}
 		}
 
 		public string SearchString
 		{
-			get { return searchString; }
-			set { PropertyChanged.ChangeAndNotify(this, ref searchString, value); }
-		}
+			get => searchString;
+            set => PropertyChanged.ChangeAndNotify(this, ref searchString, value);
+        }
 
 		public string ReplaceString
 		{
-			get { return replaceWidthString; }
-			set { PropertyChanged.ChangeAndNotify(this, ref replaceWidthString, value);	}
-		}
+			get => replaceWidthString;
+            set => PropertyChanged.ChangeAndNotify(this, ref replaceWidthString, value);
+        }
 
 		public SearchType SearchType
 		{
-			get { return searchType; }
-			set { PropertyChanged.ChangeAndNotify(this, ref searchType, value); }
-		}
+			get => searchType;
+            set => PropertyChanged.ChangeAndNotify(this, ref searchType, value);
+        }
 
 		public ReplaceType ReplaceType 
 		{
-			get { return replaceType; }
-			set { PropertyChanged.ChangeAndNotify(this, ref replaceType, value); } 
-		}
+			get => replaceType;
+            set => PropertyChanged.ChangeAndNotify(this, ref replaceType, value);
+        }
 
 		public bool SearchParameterCaseSensitivity
 		{
-			get { return searchParameterCaseSensitivity; }
-			set { PropertyChanged.ChangeAndNotify(this, ref searchParameterCaseSensitivity, value); }
-		}
+			get => searchParameterCaseSensitivity;
+            set => PropertyChanged.ChangeAndNotify(this, ref searchParameterCaseSensitivity, value);
+        }
 
 		public bool SearchParameterIncludeSubfolders
 		{
-			get { return searchParameterIncludeSubfolers; }
-			set { PropertyChanged.ChangeAndNotify(this, ref searchParameterIncludeSubfolers, value); }
-		}
+			get => searchParameterIncludeSubfolers;
+            set => PropertyChanged.ChangeAndNotify(this, ref searchParameterIncludeSubfolers, value);
+        }
 
 		public bool SearchParameterChangeFolderNames
 		{
-			get { return searchParameterChangeFolderNames; }
-			set { PropertyChanged.ChangeAndNotify(this, ref searchParameterChangeFolderNames, value); }
-		}
+			get => searchParameterChangeFolderNames;
+            set => PropertyChanged.ChangeAndNotify(this, ref searchParameterChangeFolderNames, value);
+        }
 
 		public ObservableCollection<ColumnDescriptor> Columns                  { get; }
 		public ObservableCollection<FileListItem>     ListItems                { get; }
 		public ObservableCollection<string>           LastExecutedStartFolders { get; }
 
-		public event PropertyChangedEventHandler PropertyChanged;		
-	}
+        protected override void CleanUp() { }
+		public override event PropertyChangedEventHandler PropertyChanged;
+    }
 }

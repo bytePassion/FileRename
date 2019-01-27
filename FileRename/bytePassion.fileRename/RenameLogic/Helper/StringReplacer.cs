@@ -5,23 +5,20 @@ using System.Text;
 
 namespace bytePassion.FileRename.RenameLogic.Helper
 {
-	public static class StringReplacer
+    public static class StringReplacer
 	{
-		public static string GetReplacedString(string name, string replacement, IEnumerable<Tuple<int, int>> replacementIndecies)
+		public static string GetReplacedString(string name, string replacement, IEnumerable<StringIntervalIndecies> replacementIndecies)
 		{
 			var stringBuilder = new StringBuilder();
 
-			int currentIndex = 0;
+			var currentIndex = 0;
 
-			foreach (var indexTuple in replacementIndecies)
-			{
-				int startIndex = indexTuple.Item1;
-				int endIndex = indexTuple.Item2;
-
-				stringBuilder.Append(name.Substring(currentIndex, startIndex - currentIndex));
+			foreach (var intervalIndecies in replacementIndecies)
+			{				
+				stringBuilder.Append(name.Substring(currentIndex, intervalIndecies.StartIndex - currentIndex));
 				stringBuilder.Append(replacement);
 
-				currentIndex = endIndex;
+				currentIndex = intervalIndecies.EndIndex;
 			}
 
 			stringBuilder.Append(name.Substring(currentIndex, name.Length - currentIndex));
